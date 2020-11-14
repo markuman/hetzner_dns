@@ -19,7 +19,7 @@ from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import
 def main():
     module = AnsibleModule(
         argument_spec = dict(
-            name = dict(required=False, type='str'),
+            name = dict(required=True, type='str'),
             api_token = dict(required=False, type='str', no_log=True, aliases=['access_token'])
         )
     )
