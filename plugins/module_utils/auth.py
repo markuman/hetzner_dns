@@ -25,4 +25,25 @@ class HetznerAPIHandler:
         except requests.exceptions.RequestException:
             raise AnsibleError('HTTP Request failed')
 
+    def get_record_info(self, zone_id):
+        try:
+            r = requests.get(
+                url="https://dns.hetzner.com/api/v1/records",
+                params={
+                    "zone_id": zone_id,
+                },
+                headers={
+                    "Auth-API-Token": self.TOKEN,
+                },
+            )
+            if r.status_code == 200:
+                return r
+            else:
+                raise AnsibleError('Unknown Error')
+        except requests.exceptions.RequestException:
+            raise AnsibleError('HTTP Request failed')
+
+
+
+
 
