@@ -12,7 +12,9 @@ EXAMPLES = '''
 '''
 
 from ansible.module_utils.basic import *
-from ansible_collections.markuman.hetzner_dns.plugins.module_utils.auth import HetznerAPIHandler
+from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import HetznerAPIHandler
+from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import ZoneInfo
+
 
 def main():
     module = AnsibleModule(
@@ -27,15 +29,8 @@ def main():
     name = module.params.get("name")
 
     zones = dns.get_zone_info()
-
-    zone_id = None
-    zone_info = {}
-    for item in zones.json()['zones']:
-        if item.get('name') == name:
-            zone_id = item.get('id')
-            zone_info = item
+    zone_id, zone_info = ZoneInfo(zones, name)
     
-
     module.exit_json(changed = False, zone_id=zone_id, zone_info=zone_info)
     
 

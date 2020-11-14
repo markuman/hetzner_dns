@@ -3,6 +3,16 @@ import requests
 import json
 from ansible.errors import AnsibleError
 
+def ZoneInfo(zones, name):
+    zone_id = None
+    zone_info = {}
+    for item in zones.json()['zones']:
+        if item.get('name') == name:
+            zone_id = item.get('id')
+            zone_info = item
+
+    return zone_id, zone_info
+
 class HetznerAPIHandler:
     def __init__(self, kwargs):
         self.TOKEN = kwargs.get('api_token') or os.environ.get('HETZNER_DNS_TOKEN')
