@@ -54,6 +54,63 @@ class HetznerAPIHandler:
             raise AnsibleError('HTTP Request failed')
 
 
+    def create_record(self, record):
+        try:
+            r = requests.post(
+                url="https://dns.hetzner.com/api/v1/records",
+                headers={
+                    "Content-Type": "application/json",
+                    "Auth-API-Token": self.TOKEN,
+                },
+                data=json.dumps(record)
+            )
+            if r.status_code == 200:
+                return r
+            else:
+                q(r.status_code)
+                raise AnsibleError('Unknown Error')
+        except requests.exceptions.RequestException:
+            raise AnsibleError('HTTP Request failed')
+
+
+    def update_record(self, record, record_id):
+        try:
+            r = requests.put(
+                url="https://dns.hetzner.com/api/v1/records/{RecordID}".format(RecordID=record_id),
+                headers={
+                    "Content-Type": "application/json",
+                    "Auth-API-Token": self.TOKEN,
+                },
+                data=json.dumps(record)
+            )
+            if r.status_code == 200:
+                return r
+            else:
+                raise AnsibleError('Unknown Error')
+        except requests.exceptions.RequestException:
+            raise AnsibleError('HTTP Request failed')
+
+    def delete_record(self, record_id):
+        try:
+            r = requests.delete(
+                url="https://dns.hetzner.com/api/v1/records/{RecordID}".format(RecordID=record_id),
+                headers={
+                    "Auth-API-Token": self.TOKEN,
+                },
+            )
+            if r.status_code == 200:
+                return r
+            else:
+                raise AnsibleError('Unknown Error')
+        except requests.exceptions.RequestException:
+            raise AnsibleError('HTTP Request failed')
+
+
+
+
+
+
+
 
 
 

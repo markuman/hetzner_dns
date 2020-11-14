@@ -1,0 +1,130 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+DOCUMENTATION = '''
+module: markuman.hetzner_dns.zone_info
+'''
+
+EXAMPLES = '''
+    - name: add record
+      markuman.hetzner_dns.record:
+        zone_name: osuv.de
+        name: hetzner_dns_ansible_collection
+        value: osuv.de.
+        type: CNAME
+        ttl: 300
+      register: RECORD
+
+    - name: add record no change
+      markuman.hetzner_dns.record:
+        zone_name: osuv.de
+        name: hetzner_dns_ansible_collection
+        value: osuv.de.
+        type: CNAME
+        ttl: 300
+      register: RECORD
+
+    - name: add record change
+      markuman.hetzner_dns.record:
+        zone_name: osuv.de
+        name: hetzner_dns_ansible_collection
+        value: osuv.de.
+        type: CNAME
+        ttl: 60
+      register: RECORD
+
+    - name: del record
+      markuman.hetzner_dns.record:
+        zone_name: osuv.de
+        name: hetzner_dns_ansible_collection
+        type: CNAME
+        state: absent
+      register: RECORD
+'''
+
+from ansible.module_utils.basic import *
+from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import HetznerAPIHandler
+from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import ZoneInfo
+
+
+def main():
+    argument_spec = dict(
+        zone_id = dict(required=False, type='str'),
+        zone_name = dict(required=False, type='str'),
+        api_token = dict(required=False, type='str', no_log=True, aliases=['access_token']),
+        name = dict(required=True, type='str'),
+        value = dict(required=False, type='str'),
+        ttl = dict(default=0, type='int'),
+        type = dict(required=True, type='str'),
+        state = dict(type='str', default='present', choices=['present', 'absent'])
+    )
+    
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        mutually_exclusive=[['zone_id', 'zone_name']]
+    )
+
+    dns = HetznerAPIHandler(module.params)
+
+    zone_id = module.params.get("zone_id")
+    zone_name = module.params.get("zone_name")
+    state = module.params.get("state")
+
+    if zone_id is None:
+        zones = dns.get_zone_info()
+        zone_id, zone_info = ZoneInfo(zones, zone_name)
+
+    future_record = {
+        'name': module.params.get("name"),
+        'value': module.params.get("value"),
+        'type': module.params.get("type"),
+        'ttl': int(module.params.get("ttl")),
+        'zone_id': zone_id
+    }
+
+    find_record = {
+        'name': future_record.get('name'),
+        'type': future_record.get('type'),
+    }
+
+    records = dns.get_record_info(zone_id)
+
+    record_changed = False
+    record_exists = False
+    change = False
+    for record in records.json()['records']:
+        if all(item in record.items() for item in find_record.items()):
+            record_exists = True
+            record_id = record.get('id')
+            if not all(item in record.items() for item in future_record.items()):
+                record_changed = True
+            else:
+                this_record = record
+            break
+    
+    if state == 'present':
+        if not record_exists:
+            r = dns.create_record(future_record)
+            record_id = r.json()['record']['id']
+            this_record = r.json()
+            change = True
+        elif record_changed:
+            r = dns.update_record(future_record, record_id)
+            this_record = r.json()
+            change = True
+
+    if state == 'absent':
+        if record_exists:
+            change = True
+            r = dns.delete_record(record_id)
+        else:
+            change = False
+        this_record = None
+        record_id = None
+            
+
+    module.exit_json(changed = change, record_id=record_id, record_info=this_record)
+    
+
+if __name__ == '__main__':
+    main()
