@@ -55,7 +55,7 @@ def main():
         name = dict(required=True, type='str'),
         value = dict(type='str'),
         ttl = dict(default=0, type='int'),
-        type = dict(required=True, type='str'),
+        type = dict(required=True, type='str', choices=["A","AAAA","NS","MX","CNAME","RP","TXT","SOA","HINFO","SRV","DANE","TLSA","DS","CAA"]),
         state = dict(type='str', default='present', choices=['present', 'absent'])
     )
     

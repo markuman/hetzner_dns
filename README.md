@@ -18,10 +18,10 @@ Either `zone_id` or `zone_name`  must be given, but not both.
 
 | parameters | default | comment |
 | --- | --- | --- |
-| `name` | - | - |
+| `name` | - | name of a record |
 | `value` | - | required with `state: present` |
-| `type` | - | - |
-| `ttl` | `0` | - |
+| `type` | - | type of record. valid records: "A" "AAAA" "NS" "MX" "CNAME" "RP" "TXT" "SOA" "HINFO" "SRV" "DANE" "TLSA" "DS" "CAA" |
+| `ttl` | `0` | TTL of a record |
 | `zone_id` | - | Required onf of `zone_name` or `zone_id` |
 | `zone_name` | - | Required onf of `zone_name` or `zone_id` |
 | `api_token` | - | Can be also set as env variable `HETZNER_DNS_TOKEN` |
