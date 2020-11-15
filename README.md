@@ -13,7 +13,8 @@ The API token can be set via ansible parameter or ENV variable.
 
 When `state: absent` (_deleting_) a record, than `name` and `type` are sufficient (_`value` and `ttl` doesn't matter_).  
 When `state: present`, the `ttl` default value  is set to `0`.  
-Either `zone_id` or `zone_name`  must be given, but not both.
+Either `zone_id` or `zone_name`  must be given, but not both.  
+`record` module supports `check_mode`.
 
 | parameters | default | comment |
 | --- | --- | --- |
