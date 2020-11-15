@@ -67,7 +67,6 @@ class HetznerAPIHandler:
             if r.status_code == 200:
                 return r
             else:
-                q(r.status_code)
                 raise AnsibleError('Unknown Error')
         except requests.exceptions.RequestException:
             raise AnsibleError('HTTP Request failed')

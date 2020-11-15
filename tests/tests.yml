@@ -4,13 +4,9 @@
   gather_facts: no
 
   vars:
-    TEST_ZONE: hetzner_dns.osuv.de
+    TEST_ZONE: osuv.de
 
   tasks:
-    - name: fetch all zone infos
-      markuman.hetzner_dns.zone_info:
-      register: ZONES
-
     - name: fetch zone info
       markuman.hetzner_dns.zone_info:
         name: "{{ TEST_ZONE }}"
@@ -26,12 +22,18 @@
         ttl: 300
       register: RECORD
 
+    - name: add record
+      assert:
+        that:
+          - RECORD is changed
+          - RECORD.record_info.record.ttl == 300
+
     - name: fetch record info
       markuman.hetzner_dns.record_info:
         filter:
           - name: hetzner_dns_ansible_collection
             type: CNAME
-        zone_name: osuv.de
+        zone_name: "{{ TEST_ZONE }}"
 
     - name: add record no change
       markuman.hetzner_dns.record:
@@ -41,8 +43,29 @@
         type: CNAME
         ttl: 300
       register: RECORD
+    
+    - name: add record no change
+      assert:
+        that:
+          - RECORD is not changed
 
-    - name: add record change
+    - name: modify record change in check_mode
+      markuman.hetzner_dns.record:
+        zone_name: "{{ TEST_ZONE }}"
+        name: hetzner_dns_ansible_collection
+        value: osuv.de.
+        type: CNAME
+        ttl: 60
+      check_mode: yes
+      register: RECORD
+
+    - name: change record check_mode
+      assert:
+        that:
+          - RECORD is changed
+          - RECORD.record_info.record.ttl == 60
+
+    - name: modify record change
       markuman.hetzner_dns.record:
         zone_name: "{{ TEST_ZONE }}"
         name: hetzner_dns_ansible_collection
@@ -50,6 +73,12 @@
         type: CNAME
         ttl: 60
       register: RECORD
+
+    - name: change record
+      assert:
+        that:
+          - RECORD is changed
+          - RECORD.record_info.record.ttl == 60
 
     - name: del record
       markuman.hetzner_dns.record:
@@ -59,6 +88,11 @@
         state: absent
       register: RECORD
 
+    - name: del record
+      assert:
+        that:
+          - RECORD is changed
+
     - name: del record no change
       markuman.hetzner_dns.record:
         zone_name: "{{ TEST_ZONE }}"
@@ -66,3 +100,8 @@
         type: CNAME
         state: absent
       register: RECORD
+
+    - name: del record
+      assert:
+        that:
+          - RECORD is not changed

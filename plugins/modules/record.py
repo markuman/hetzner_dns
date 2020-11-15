@@ -53,7 +53,7 @@ def main():
         zone_name = dict(required=False, type='str'),
         api_token = dict(required=False, type='str', no_log=True, aliases=['access_token']),
         name = dict(required=True, type='str'),
-        value = dict(required=False, type='str'),
+        value = dict(type='str'),
         ttl = dict(default=0, type='int'),
         type = dict(required=True, type='str'),
         state = dict(type='str', default='present', choices=['present', 'absent'])
@@ -61,7 +61,11 @@ def main():
     
     module = AnsibleModule(
         argument_spec=argument_spec,
-        mutually_exclusive=[['zone_id', 'zone_name']]
+        required_if=[['state', 'present', ['value']]],
+        required_one_of=[
+            ['zone_id', 'zone_name']
+        ],
+        supports_check_mode=True
     )
 
     dns = HetznerAPIHandler(module.params)
@@ -104,19 +108,26 @@ def main():
     
     if state == 'present':
         if not record_exists:
-            r = dns.create_record(future_record)
-            record_id = r.json()['record']['id']
-            this_record = r.json()
+            record_id = None
+            this_record = { 'record': future_record }
             change = True
+            if not module.check_mode:
+              r = dns.create_record(future_record)
+              record_id = r.json()['record']['id']
+              this_record = r.json()
         elif record_changed:
-            r = dns.update_record(future_record, record_id)
-            this_record = r.json()
             change = True
+            this_record = { 'record': future_record }
+            if not module.check_mode:
+              r = dns.update_record(future_record, record_id)
+              this_record = r.json()
+            
 
     if state == 'absent':
         if record_exists:
             change = True
-            r = dns.delete_record(record_id)
+            if not module.check_mode:
+              r = dns.delete_record(record_id)
         else:
             change = False
         this_record = None
