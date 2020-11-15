@@ -2,6 +2,9 @@
 
 Manage DNS records using ansible. E.g. [set DNS records while creating servers in the same play](https://git.osuv.de/m/hetzner_dns/wiki/Home).
 
+* https://galaxy.ansible.com/markuman/hetzner_dns
+* `ansible-galaxy collection install markuman.hetzner_dns`
+
 ## Auth
 
 The API token can be set via ansible parameter or ENV variable.
