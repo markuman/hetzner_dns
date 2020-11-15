@@ -1,6 +1,6 @@
 # hetzner dns ansible collection
 
-Manage DNS records using ansible. E.g. [set DNS record while creating servers in the same play](https://git.osuv.de/m/hetzner_dns/wiki/Home).
+Manage DNS records using ansible. E.g. [set DNS records while creating servers in the same play](https://git.osuv.de/m/hetzner_dns/wiki/Home).
 
 ## Auth
 
