@@ -27,8 +27,8 @@ Either `zone_id` or `zone_name`  must be given, but not both.
 | `value` | - | required with `state: present` |
 | `type` | - | type of record. valid records: "A" "AAAA" "NS" "MX" "CNAME" "RP" "TXT" "SOA" "HINFO" "SRV" "DANE" "TLSA" "DS" "CAA" |
 | `ttl` | `0` | TTL of a record |
-| `zone_id` | - | Required onf of `zone_name` or `zone_id` |
-| `zone_name` | - | Required onf of `zone_name` or `zone_id` |
+| `zone_id` | - | Required one of `zone_name` or `zone_id` |
+| `zone_name` | - | Required one of `zone_name` or `zone_id` |
 | `api_token` | - | Can be also set as env variable `HETZNER_DNS_TOKEN` |
 
 
@@ -69,6 +69,22 @@ Either `zone_id` or `zone_name`  must be given, but not both.
   register: RECORD
 ```
 
+#### mx priority
+
+When dialing with sevaral mx records, the priority must be part of the value.
+
+```yml
+- name: take care about mx record
+  markuman.hetzner_dns.record:
+    api_token: "{{ API }}"
+    zone_name: osuv.de
+    name: "@"
+    value: 10 mail.osuv.de.
+    type: MX
+    ttl: 300
+  register: RECORD
+```
+
 ## record_info
 
 When no filter is given, all records will be returned.  
@@ -78,8 +94,8 @@ Parameter `filter` must be a list, where each object supports the same keys as i
 | parameter | default | comments |
 | --- | --- | --- |
 | `filter` | - | Apply a list of key/value pairs to search for |
-| `zone_id` | - | Required onf of `zone_name` or `zone_id` |
-| `zone_name` | - | Required onf of `zone_name` or `zone_id` |
+| `zone_id` | - | Required one of `zone_name` or `zone_id` |
+| `zone_name` | - | Required one of `zone_name` or `zone_id` |
 | `api_token` | - | Can be also set as env variable `HETZNER_DNS_TOKEN` |
 
 
