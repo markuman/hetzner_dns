@@ -54,7 +54,7 @@ def main():
         api_token = dict(required=False, type='str', no_log=True, aliases=['access_token']),
         name = dict(required=True, type='str'),
         value = dict(type='str'),
-        ttl = dict(default=0, type='int'),
+        ttl = dict(default=300, type='int'),
         type = dict(required=True, type='str', choices=["A","AAAA","NS","MX","CNAME","RP","TXT","SOA","HINFO","SRV","DANE","TLSA","DS","CAA"]),
         state = dict(type='str', default='present', choices=['present', 'absent'])
     )
@@ -97,6 +97,8 @@ def main():
     record_exists = False
     change = False
     for record in records.json()['records']:
+        if not record.get('ttl'):
+          record['ttl'] = 300
         if all(item in record.items() for item in find_record.items()):
             record_exists = True
             record_id = record.get('id')

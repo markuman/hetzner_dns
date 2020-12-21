@@ -17,7 +17,7 @@ The API token can be set via ansible parameter or ENV variable.
 ## record
 
 When `state: absent` (_deleting_) a record, than `name` and `type` are sufficient (_`value` and `ttl` doesn't matter_).  
-When `state: present`, the `ttl` default value  is set to `0`.  
+When `state: present`, the `ttl` default value  is set to `300`.  
 Either `zone_id` or `zone_name`  must be given, but not both.  
 `record` module supports `check_mode`.
 
@@ -26,7 +26,7 @@ Either `zone_id` or `zone_name`  must be given, but not both.
 | `name` | - | name of a record |
 | `value` | - | required with `state: present` |
 | `type` | - | type of record. valid records: "A" "AAAA" "NS" "MX" "CNAME" "RP" "TXT" "SOA" "HINFO" "SRV" "DANE" "TLSA" "DS" "CAA" |
-| `ttl` | `0` | TTL of a record |
+| `ttl` | `300` | TTL of a record |
 | `zone_id` | - | Required one of `zone_name` or `zone_id` |
 | `zone_name` | - | Required one of `zone_name` or `zone_id` |
 | `api_token` | - | Can be also set as env variable `HETZNER_DNS_TOKEN` |
@@ -125,6 +125,6 @@ To determine the `zone_id`.
 
 | **host** | **category** |
 | --- | --- |
-| https://git.osuv.de/m/hetzner_dns | origin |
-| https://gitlab.com/markuman/hetzner_dns | pull mirror |
-| https://github.com/markuman/hetzner_dns | push mirror |
+| [git.osuv.de/m/hetzner_dns](https://git.osuv.de/m/hetzner_dns) | origin |
+| [gitlab.com/markuman/hetzner_dns](https://gitlab.com/markuman/hetzner_dns) | pull mirror |
+| [gitub.com/markuman/hetzner_dns](https://github.com/markuman/hetzner_dns) | push mirror |
