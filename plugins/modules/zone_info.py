@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# Part of ansible markuman.hetzner_dns collection
+
 DOCUMENTATION = '''
 module: markuman.hetzner_dns.zone_info
 '''
@@ -17,11 +20,14 @@ from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import
 
 
 def main():
+    argument_spec = dict(
+        name = dict(required=True, type='str'),
+        api_token = dict(required=False, type='str', no_log=True, aliases=['access_token'])
+    )
+
     module = AnsibleModule(
-        argument_spec = dict(
-            name = dict(required=True, type='str'),
-            api_token = dict(required=False, type='str', no_log=True, aliases=['access_token'])
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=True
     )
 
     dns = HetznerAPIHandler(module.params)

@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# Part of ansible markuman.hetzner_dns collection
+
 DOCUMENTATION = '''
 module: markuman.hetzner_dns.zone_info
 '''
@@ -33,7 +36,8 @@ def main():
     
     module = AnsibleModule(
         argument_spec=argument_spec,
-        mutually_exclusive=[['zone_id', 'zone_name']]
+        mutually_exclusive=[['zone_id', 'zone_name']],
+        supports_check_mode=True
     )
 
     dns = HetznerAPIHandler(module.params)
