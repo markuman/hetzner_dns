@@ -7,101 +7,132 @@
     TEST_ZONE: osuv.de
 
   tasks:
-    - name: fetch zone info
-      markuman.hetzner_dns.zone_info:
-        name: "{{ TEST_ZONE }}"
-      register: ZONES
+    - name: test create
+      block:
+        - name: fetch zone info
+          markuman.hetzner_dns.zone_info:
+            name: "{{ TEST_ZONE }}"
+          register: ZONES
 
-    
-    - name: add record
-      markuman.hetzner_dns.record:
-        zone_id: "{{ ZONES.zone_id }}"
-        name: hetzner_dns_ansible_collection
-        value: osuv.de.
-        type: CNAME
-        ttl: 300
-      register: RECORD
+        - name: >
+            fetch zone info must also work
+            in check_mode
+          markuman.hetzner_dns.zone_info:
+            name: "{{ TEST_ZONE }}"
+          check_mode: yes
+          register: ZONES
 
-    - name: add record
-      assert:
-        that:
-          - RECORD is changed
-          - RECORD.record_info.record.ttl == 300
-
-    - name: fetch record info
-      markuman.hetzner_dns.record_info:
-        filter:
-          - name: hetzner_dns_ansible_collection
+        - name: add record
+          markuman.hetzner_dns.record:
+            zone_id: "{{ ZONES.zone_id }}"
+            name: hetzner_dns_ansible_collection
+            value: osuv.de.
             type: CNAME
-        zone_name: "{{ TEST_ZONE }}"
+            ttl: 300
+          register: RECORD
 
-    - name: add record no change
-      markuman.hetzner_dns.record:
-        zone_name: "{{ TEST_ZONE }}"
-        name: hetzner_dns_ansible_collection
-        value: osuv.de.
-        type: CNAME
-        ttl: 300
-      register: RECORD
-    
-    - name: add record no change
-      assert:
-        that:
-          - RECORD is not changed
+        - name: add record
+          assert:
+            that:
+              - RECORD is changed
+              - RECORD.record_info.record.ttl == 300
 
-    - name: modify record change in check_mode
-      markuman.hetzner_dns.record:
-        zone_name: "{{ TEST_ZONE }}"
-        name: hetzner_dns_ansible_collection
-        value: osuv.de.
-        type: CNAME
-        ttl: 60
-      check_mode: yes
-      register: RECORD
+        - name: fetch record info
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: hetzner_dns_ansible_collection
+                type: CNAME
+            zone_name: "{{ TEST_ZONE }}"
 
-    - name: change record check_mode
-      assert:
-        that:
-          - RECORD is changed
-          - RECORD.record_info.record.ttl == 60
+        - name: >
+            fetch record info must
+            also work in check_mode
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: hetzner_dns_ansible_collection
+                type: CNAME
+            zone_name: "{{ TEST_ZONE }}"
+          check_mode: yes
 
-    - name: modify record change
-      markuman.hetzner_dns.record:
-        zone_name: "{{ TEST_ZONE }}"
-        name: hetzner_dns_ansible_collection
-        value: osuv.de.
-        type: CNAME
-        ttl: 60
-      register: RECORD
+        - name: add record no change
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: hetzner_dns_ansible_collection
+            value: osuv.de.
+            type: CNAME
+            ttl: 300
+          register: RECORD
+        
+        - name: add record no change
+          assert:
+            that:
+              - RECORD is not changed
+              - RECORD.past_record.ttl == 300
+              - RECORD.record_info.record.ttl == 300
 
-    - name: change record
-      assert:
-        that:
-          - RECORD is changed
-          - RECORD.record_info.record.ttl == 60
+        - name: modify record change in check_mode
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: hetzner_dns_ansible_collection
+            value: osuv.de.
+            type: CNAME
+            ttl: 60
+          check_mode: yes
+          register: RECORD
 
-    - name: del record
-      markuman.hetzner_dns.record:
-        zone_name: "{{ TEST_ZONE }}"
-        name: hetzner_dns_ansible_collection
-        type: CNAME
-        state: absent
-      register: RECORD
+        - name: change record check_mode
+          assert:
+            that:
+              - RECORD is changed
+              - RECORD.record_info.record.ttl == 60
+              - RECORD.past_record.ttl == 300
 
-    - name: del record
-      assert:
-        that:
-          - RECORD is changed
+        - name: modify record change
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: hetzner_dns_ansible_collection
+            value: osuv.de.
+            type: CNAME
+            ttl: 60
+          register: RECORD
 
-    - name: del record no change
-      markuman.hetzner_dns.record:
-        zone_name: "{{ TEST_ZONE }}"
-        name: hetzner_dns_ansible_collection
-        type: CNAME
-        state: absent
-      register: RECORD
+        - name: change record
+          assert:
+            that:
+              - RECORD is changed
+              - RECORD.record_info.record.ttl == 60
+              - RECORD.past_record.ttl == 300
 
-    - name: del record
-      assert:
-        that:
-          - RECORD is not changed
+        - name: del record
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: hetzner_dns_ansible_collection
+            type: CNAME
+            state: absent
+          register: RECORD
+
+        - name: del record
+          assert:
+            that:
+              - RECORD is changed
+
+        - name: del record no change
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: hetzner_dns_ansible_collection
+            type: CNAME
+            state: absent
+          register: RECORD
+
+        - name: del record
+          assert:
+            that:
+              - RECORD is not changed
+
+      always:
+        - name: always del record
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: hetzner_dns_ansible_collection
+            type: CNAME
+            state: absent

@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# Part of ansible markuman.hetzner_dns collection
+
 DOCUMENTATION = '''
 module: markuman.hetzner_dns.zone_info
 '''
@@ -96,14 +99,16 @@ def main():
     record_changed = False
     record_exists = False
     change = False
+    past_record = None
     for record in records.json()['records']:
         if all(item in record.items() for item in find_record.items()):
             record_exists = True
             record_id = record.get('id')
+            past_record = record
             if not all(item in record.items() for item in future_record.items()):
                 record_changed = True
             else:
-                this_record = record
+                this_record = { 'record': record }
             break
     
     if state == 'present':
@@ -130,11 +135,11 @@ def main():
               r = dns.delete_record(record_id)
         else:
             change = False
-        this_record = None
+        this_record = { 'record': None }
         record_id = None
             
 
-    module.exit_json(changed = change, record_id=record_id, record_info=this_record)
+    module.exit_json(changed = change, record_id=record_id, record_info=this_record, past_record=past_record)
     
 
 if __name__ == '__main__':
