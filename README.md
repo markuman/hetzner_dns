@@ -28,7 +28,7 @@ All modules supports and respects `check_mode: yes`.
 | `name` | - | name of a record |
 | `value` | - | required with `state: present` |
 | `type` | - | type of record. valid records: "A" "AAAA" "NS" "MX" "CNAME" "RP" "TXT" "SOA" "HINFO" "SRV" "DANE" "TLSA" "DS" "CAA" |
-| `ttl` | `0` | TTL of a record |
+| `ttl` | `300` | TTL of a record |
 | `zone_id` | - | Required one of `zone_name` or `zone_id` |
 | `zone_name` | - | Required one of `zone_name` or `zone_id` |
 | `api_token` | - | Can be also set as env variable `HETZNER_DNS_TOKEN` |
