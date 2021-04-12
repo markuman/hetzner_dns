@@ -13,13 +13,15 @@ The API token can be set via ansible parameter or ENV variable.
 | --- | --- |
 | `api_token` | `HETZNER_DNS_TOKEN` |
 
+All modules supports and respects `check_mode: yes`.
 
 ## record
 
-When `state: absent` (_deleting_) a record, than `name` and `type` are sufficient (_`value` and `ttl` doesn't matter_).  
-When `state: present`, the `ttl` default value  is set to `0`.  
-Either `zone_id` or `zone_name`  must be given, but not both.  
-`record` module supports `check_mode`.
+* `state: absent` 
+    * _deleting_ a record: `name` and `type` are sufficient (_`value` and `ttl` doesn't matter_).  
+* `state: present`
+    * the `ttl` default value is set to `0` (_same as hetzner webinterface did._)
+    * Either `zone_id` or `zone_name`  must be given, but not both.  
 
 | parameters | default | comment |
 | --- | --- | --- |
@@ -126,5 +128,11 @@ To determine the `zone_id`.
 | **host** | **category** |
 | --- | --- |
 | https://git.osuv.de/m/hetzner_dns | origin |
-| https://gitlab.com/markuman/hetzner_dns | pull mirror |
-| https://github.com/markuman/hetzner_dns | push mirror |
+| https://gitlab.com/markuman/hetzner_dns | pull mirror, issues, MR |
+| https://github.com/markuman/hetzner_dns | push mirror, issues, PR |
+
+#### License
+
+GNU General Public License v3.0+  
+
+_Basically I don't care about the license in this case. So I've decided to choose the same license as [official Ansible Hetzner Cloud Collection](https://github.com/ansible-collections/hetzner.hcloud)._
