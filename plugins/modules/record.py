@@ -46,8 +46,9 @@ EXAMPLES = '''
 '''
 
 from ansible.module_utils.basic import *
+from ansible.errors import AnsibleError
 from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import HetznerAPIHandler
-from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import ZoneInfo
+from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import ZoneInfo, error_codes, UE
 
 
 def main():
@@ -80,6 +81,8 @@ def main():
     if zone_id is None:
         zones = dns.get_zone_info()
         zone_id, zone_info = ZoneInfo(zones, zone_name)
+        if zone_id is None:
+          raise AnsibleError('zone or zone_id: {msg}'.format(msg=error_codes.get(404, UE)))
 
     future_record = {
         'name': module.params.get("name"),
@@ -91,7 +94,7 @@ def main():
 
     find_record = {
         'name': future_record.get('name'),
-        'type': future_record.get('type'),
+        'type': future_record.get('type')
     }
 
     records = dns.get_record_info(zone_id)

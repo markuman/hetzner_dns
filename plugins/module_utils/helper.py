@@ -9,6 +9,17 @@ import requests
 import json
 from ansible.errors import AnsibleError
 
+error_codes = {
+    200: "Successful response.",
+    401: "Unauthorized.",
+    403: "Forbidden.",
+    404: "Not found.",
+    406: "Not acceptable.",
+    409: "Conflict.",
+    422: "Unprocessable entity."
+}
+UE = "Unkown Error."
+
 def ZoneInfo(zones, name):
     zone_id = None
     zone_info = {}
@@ -37,7 +48,7 @@ class HetznerAPIHandler:
             if r.status_code == 200:
                 return r
             else:
-                raise AnsibleError('Unknown Error')
+                raise AnsibleError('zone_info: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
         except requests.exceptions.RequestException:
             raise AnsibleError('HTTP Request failed')
 
@@ -55,7 +66,7 @@ class HetznerAPIHandler:
             if r.status_code == 200:
                 return r
             else:
-                raise AnsibleError('Unknown Error')
+                raise AnsibleError('record_info: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
         except requests.exceptions.RequestException:
             raise AnsibleError('HTTP Request failed')
 
@@ -73,7 +84,7 @@ class HetznerAPIHandler:
             if r.status_code == 200:
                 return r
             else:
-                raise AnsibleError('Unknown Error')
+                raise AnsibleError('create record: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
         except requests.exceptions.RequestException:
             raise AnsibleError('HTTP Request failed')
 
@@ -88,10 +99,11 @@ class HetznerAPIHandler:
                 },
                 data=json.dumps(record)
             )
+
             if r.status_code == 200:
                 return r
             else:
-                raise AnsibleError('Unknown Error')
+                raise AnsibleError('update record: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
         except requests.exceptions.RequestException:
             raise AnsibleError('HTTP Request failed')
 
@@ -106,7 +118,7 @@ class HetznerAPIHandler:
             if r.status_code == 200:
                 return r
             else:
-                raise AnsibleError('Unknown Error')
+                raise AnsibleError('delete record: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
         except requests.exceptions.RequestException:
             raise AnsibleError('HTTP Request failed')
 
