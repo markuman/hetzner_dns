@@ -9,6 +9,23 @@
   tasks:
     - name: test create
       block:
+        - name: test gracefull error handling
+          markuman.hetzner_dns.record:
+            zone_name: none_existing
+            name: hetzner_dns_ansible_collection
+            value: osuv.de.
+            type: CNAME
+            ttl: 300
+          register: RECORD
+          ignore_errors: yes
+
+        - name: verify graceful error handling
+          assert:
+            that:
+              - RECORD is not changed
+              - RECORD is failed
+              - 'RECORD.msg == "zone or zone_id: Not found."'
+
         - name: fetch zone info
           markuman.hetzner_dns.zone_info:
             name: "{{ TEST_ZONE }}"
@@ -31,7 +48,7 @@
             ttl: 300
           register: RECORD
 
-        - name: add record
+        - name: assert add record
           assert:
             that:
               - RECORD is changed
@@ -63,7 +80,7 @@
             ttl: 300
           register: RECORD
         
-        - name: add record no change
+        - name: assert add record no change
           assert:
             that:
               - RECORD is not changed
@@ -80,7 +97,7 @@
           check_mode: yes
           register: RECORD
 
-        - name: change record check_mode
+        - name: assert change record check_mode
           assert:
             that:
               - RECORD is changed
@@ -96,7 +113,7 @@
             ttl: 60
           register: RECORD
 
-        - name: change record
+        - name: assert change record
           assert:
             that:
               - RECORD is changed
@@ -111,7 +128,7 @@
             state: absent
           register: RECORD
 
-        - name: del record
+        - name: assert del record
           assert:
             that:
               - RECORD is changed
@@ -124,7 +141,7 @@
             state: absent
           register: RECORD
 
-        - name: del record
+        - name: assert del record
           assert:
             that:
               - RECORD is not changed

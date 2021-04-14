@@ -31,10 +31,11 @@ def ZoneInfo(zones, name):
     return zone_id, zone_info
 
 class HetznerAPIHandler:
-    def __init__(self, kwargs):
-        self.TOKEN = kwargs.get('api_token') or os.environ.get('HETZNER_DNS_TOKEN')
+    def __init__(self, params, fail_json):
+        self.fail_json = fail_json
+        self.TOKEN = params.get('api_token') or os.environ.get('HETZNER_DNS_TOKEN')
         if self.TOKEN is None:
-            raise AnsibleError('Unable to continue. No Hetzner DNS API Token is given.')
+            self.fail_json(msg='Unable to continue. No Hetzner DNS API Token is given.')
 
     def get_zone_info(self):
         try:
@@ -48,9 +49,9 @@ class HetznerAPIHandler:
             if r.status_code == 200:
                 return r
             else:
-                raise AnsibleError('zone_info: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
+                self.fail_json(msg='zone_info: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
         except requests.exceptions.RequestException:
-            raise AnsibleError('HTTP Request failed')
+            self.fail_json(msg='HTTP Request failed')
 
     def get_record_info(self, zone_id):
         try:
@@ -66,9 +67,9 @@ class HetznerAPIHandler:
             if r.status_code == 200:
                 return r
             else:
-                raise AnsibleError('record_info: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
+                self.fail_json(msg='record_info: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
         except requests.exceptions.RequestException:
-            raise AnsibleError('HTTP Request failed')
+            self.fail_json(msg='HTTP Request failed')
 
 
     def create_record(self, record):
@@ -103,9 +104,9 @@ class HetznerAPIHandler:
             if r.status_code == 200:
                 return r
             else:
-                raise AnsibleError('update record: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
+                self.fail_json(msg='update record: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
         except requests.exceptions.RequestException:
-            raise AnsibleError('HTTP Request failed')
+            self.fail_json(msg='HTTP Request failed')
 
     def delete_record(self, record_id):
         try:
@@ -118,9 +119,9 @@ class HetznerAPIHandler:
             if r.status_code == 200:
                 return r
             else:
-                raise AnsibleError('delete record: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
+                self.fail_json(msg='delete record: {msg}'.format(msg=error_codes.get(r.status_code, UE)))
         except requests.exceptions.RequestException:
-            raise AnsibleError('HTTP Request failed')
+            self.fail_json(msg='HTTP Request failed')
 
 
 

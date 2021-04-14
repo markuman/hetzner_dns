@@ -40,7 +40,7 @@ def main():
         supports_check_mode=True
     )
 
-    dns = HetznerAPIHandler(module.params)
+    dns = HetznerAPIHandler(module.params, module.fail_json)
 
     filters = module.params.get("filter")
     zone_id = module.params.get("zone_id")

@@ -72,7 +72,7 @@ def main():
         supports_check_mode=True
     )
 
-    dns = HetznerAPIHandler(module.params)
+    dns = HetznerAPIHandler(module.params, module.fail_json)
 
     zone_id = module.params.get("zone_id")
     zone_name = module.params.get("zone_name")
@@ -82,7 +82,7 @@ def main():
         zones = dns.get_zone_info()
         zone_id, zone_info = ZoneInfo(zones, zone_name)
         if zone_id is None:
-          raise AnsibleError('zone or zone_id: {msg}'.format(msg=error_codes.get(404, UE)))
+          module.fail_json(msg='zone or zone_id: {msg}'.format(msg=error_codes.get(404, UE)))
 
     future_record = {
         'name': module.params.get("name"),

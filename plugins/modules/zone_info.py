@@ -30,7 +30,7 @@ def main():
         supports_check_mode=True
     )
 
-    dns = HetznerAPIHandler(module.params)
+    dns = HetznerAPIHandler(module.params, module.fail_json)
 
     name = module.params.get("name")
 
