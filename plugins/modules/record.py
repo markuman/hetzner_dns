@@ -49,7 +49,7 @@ from ansible.module_utils.basic import *
 from ansible.errors import AnsibleError
 from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import HetznerAPIHandler
 from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import ZoneInfo, error_codes, UE
-
+import yaml
 
 def main():
     argument_spec = dict(
@@ -142,9 +142,20 @@ def main():
             change = False
         this_record = { 'record': None }
         record_id = None
-            
 
-    module.exit_json(changed = change, record_id=record_id, record_info=this_record, past_record=past_record)
+    if past_record is None:
+        past_record = {}
+    else:
+        past_record.pop('id')
+        past_record.pop('created')
+        past_record.pop('modified')
+
+    diff = dict(
+        before=yaml.safe_dump(past_record),
+        after=yaml.safe_dump(this_record.get('record'))
+    )
+
+    module.exit_json(changed = change, record_id=record_id, record_info=this_record, past_record=past_record, diff=diff)
     
 
 if __name__ == '__main__':
