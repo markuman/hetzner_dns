@@ -37,6 +37,7 @@ def main():
     module = AnsibleModule(
         argument_spec=argument_spec,
         mutually_exclusive=[['zone_id', 'zone_name']],
+        required_one_of=[['zone_id', 'zone_name']],
         supports_check_mode=True
     )
 
