@@ -1,3 +1,7 @@
+# 1.4.1
+
+* minor change (_documentation update_).
+
 # 1.4.0
 
 * add support to add/delete muliple DNS records for one Name
