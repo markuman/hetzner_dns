@@ -1,3 +1,9 @@
+# 1.4.0
+
+* add support to add/delete muliple DNS records for one Name
+  * new paramter `purge` with alias parameter `replace`, `overwrite` and `solo` to be compatible with other ansible dns modules.
+
+
 # 1.3.0
 
 * Grafeful error handling

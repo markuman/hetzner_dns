@@ -14,7 +14,14 @@ install: ## install collection localy
 remove: ## remove collection localy
 	rm -rf markuman* ~/.ansible/collections/ansible_collections/markuman/hetzner_dns
 
+syntax: ## test compile
+	python -m py_compile plugins/modules/record.py
+	python -m py_compile plugins/modules/record_info.py
+	python -m py_compile plugins/modules/zone_info.py
+	python -m py_compile plugins/module_utils/helper.py
+
 round: ## remove, build install
+	$(MAKE) syntax
 	$(MAKE) remove
 	$(MAKE) build
 	$(MAKE) install

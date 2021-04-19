@@ -84,7 +84,7 @@
           assert:
             that:
               - RECORD is not changed
-              - RECORD.past_record.ttl == 300
+              - RECORD.past_record[0].ttl == 300
               - RECORD.record_info.record.ttl == 300
 
         - name: modify record change in check_mode
@@ -102,7 +102,7 @@
             that:
               - RECORD is changed
               - RECORD.record_info.record.ttl == 60
-              - RECORD.past_record.ttl == 300
+              - RECORD.past_record[0].ttl == 300
 
         - name: modify record change
           markuman.hetzner_dns.record:
@@ -118,7 +118,7 @@
             that:
               - RECORD is changed
               - RECORD.record_info.record.ttl == 60
-              - RECORD.past_record.ttl == 300
+              - RECORD.past_record[0].ttl == 300
 
         - name: del record
           markuman.hetzner_dns.record:
@@ -146,10 +146,114 @@
             that:
               - RECORD is not changed
 
+        - name: add single A record
+          markuman.hetzner_dns.record:
+            zone_id: "{{ ZONES.zone_id }}"
+            name: hetzner_dns_ansible_collection
+            value: 1.1.1.1
+            type: A
+            ttl: 60
+          register: RECORD
+
+        - name: append A record
+          markuman.hetzner_dns.record:
+            zone_id: "{{ ZONES.zone_id }}"
+            name: hetzner_dns_ansible_collection
+            value: 8.8.8.8
+            type: A
+            purge: no
+            ttl: 60
+          register: RECORD
+
+        - name: append A record
+          markuman.hetzner_dns.record:
+            zone_id: "{{ ZONES.zone_id }}"
+            name: hetzner_dns_ansible_collection
+            value: 8.8.4.4
+            type: A
+            purge: no
+            ttl: 60
+          register: RECORD
+
+        - name: fetch record info
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: hetzner_dns_ansible_collection
+                type: A
+            zone_name: "{{ TEST_ZONE }}"
+          register: RECORD
+
+        - name: assert 3 A recordds
+          assert:
+            that:
+              - RECORD.record_info | count == 3
+
+        - name: fetch one record
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: hetzner_dns_ansible_collection
+                type: A
+                value: 8.8.8.8
+            zone_name: "{{ TEST_ZONE }}"
+          register: RECORD
+
+        - name: assert 1 A recordds
+          assert:
+            that:
+              - RECORD.record_info | count == 1
+
+        - name: delete single A record
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: hetzner_dns_ansible_collection
+            value: 8.8.8.8
+            type: A
+            state: absent
+
+        - name: fetch record info
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: hetzner_dns_ansible_collection
+                type: A
+            zone_name: "{{ TEST_ZONE }}"
+          register: RECORD
+
+        - name: assert 2 A recordds
+          assert:
+            that:
+              - RECORD.record_info | count == 2
+
+        - name: delete all A records
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: hetzner_dns_ansible_collection
+            type: A
+            state: absent
+
+        - name: fetch record info
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: hetzner_dns_ansible_collection
+                type: A
+            zone_name: "{{ TEST_ZONE }}"
+          register: RECORD
+
+        - name: assert 2 A recordds
+          assert:
+            that:
+              - RECORD.record_info | count == 0
+
       always:
-        - name: always del record
+        - name: always del CNAME record
           markuman.hetzner_dns.record:
             zone_name: "{{ TEST_ZONE }}"
             name: hetzner_dns_ansible_collection
             type: CNAME
+            state: absent
+
+        - name: always del A record
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: hetzner_dns_ansible_collection
+            type: A
             state: absent

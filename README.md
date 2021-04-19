@@ -11,7 +11,7 @@ The API token can be set via ansible parameter or ENV variable.
 
 | **Ansible Parameter** | **ENV Variable** |
 | --- | --- |
-| `api_token` | `HETZNER_DNS_TOKEN` |
+| `api_token` (_alias `access_token`_) | `HETZNER_DNS_TOKEN` |
 
 All modules supports and respects `check_mode: yes`.
 
@@ -26,6 +26,7 @@ All modules supports and respects `check_mode: yes`.
 | parameters | default | comment |
 | --- | --- | --- |
 | `name` | - | name of a record |
+| `purge` | `true` | Wether a existing value should be replaced (`true`) or appended (`false`) to achive multiple DNS records for one name. Alias parameter are: `replace`, `overwrite`, `solo`.
 | `value` | - | required with `state: present` |
 | `type` | - | type of record. valid records: "A" "AAAA" "NS" "MX" "CNAME" "RP" "TXT" "SOA" "HINFO" "SRV" "DANE" "TLSA" "DS" "CAA" |
 | `ttl` | `300` | TTL of a record |
@@ -69,6 +70,50 @@ All modules supports and respects `check_mode: yes`.
     type: CNAME
     state: absent
   register: RECORD
+
+- name: add single A record
+  markuman.hetzner_dns.record:
+    zone_name: osuv.de
+    name: dns
+    value: 1.1.1.1
+    type: A
+    ttl: 60
+
+- name: append A record
+  markuman.hetzner_dns.record:
+    zone_name: osuv.de
+    name: dns
+    value: 8.8.8.8
+    type: A
+    purge: no
+    ttl: 60
+
+- name: append A record
+  markuman.hetzner_dns.record:
+    zone_name: osuv.de
+    name: dns
+    value: 8.8.4.4
+    type: A
+    purge: no
+    ttl: 60
+
+- name: delete single A record
+  markuman.hetzner_dns.record:
+    zone_name: osuv.de
+    name: dns
+    value: 8.8.8.8
+    type: A
+    state: absent
+
+- name: > 
+    delete all A records
+    when no `value` is given
+  markuman.hetzner_dns.record:
+    zone_name: osuv.de
+    name: dns
+    type: A
+    state: absent
+
 ```
 
 #### mx priority

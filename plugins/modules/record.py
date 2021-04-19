@@ -60,7 +60,8 @@ def main():
         value = dict(type='str'),
         ttl = dict(default=300, type='int'),
         type = dict(required=True, type='str', choices=["A","AAAA","NS","MX","CNAME","RP","TXT","SOA","HINFO","SRV","DANE","TLSA","DS","CAA"]),
-        state = dict(type='str', default='present', choices=['present', 'absent'])
+        state = dict(type='str', default='present', choices=['present', 'absent']),
+        purge = dict(required=False, type='bool', default=True, aliases=['replace', 'overwrite', 'solo'])
     )
     
     module = AnsibleModule(
@@ -77,6 +78,7 @@ def main():
     zone_id = module.params.get("zone_id")
     zone_name = module.params.get("zone_name")
     state = module.params.get("state")
+    purge = module.params.get("purge")
 
     if zone_id is None:
         zones = dns.get_zone_info()
@@ -97,34 +99,47 @@ def main():
         'type': future_record.get('type')
     }
 
+    if module.params.get("value"):
+        find_record['value'] = module.params.get("value")
+
     records = dns.get_record_info(zone_id)
 
     record_changed = False
     record_exists = False
     change = False
-    past_record = None
+    past_record = []
+    record_ids = []
     for record in records.json()['records']:
+
         if not record.get('ttl'):
           record['ttl'] = 300
+
         if all(item in record.items() for item in find_record.items()):
             record_exists = True
             record_id = record.get('id')
-            past_record = record
+            record_ids.append(record.get('id'))
+            past_record.append(record)
+
             if not all(item in record.items() for item in future_record.items()):
                 record_changed = True
             else:
                 this_record = { 'record': record }
-            break
+
+    if record_changed and not purge:
+        record_exists = False
+        record_changed = False
     
     if state == 'present':
         if not record_exists:
             record_id = None
             this_record = { 'record': future_record }
             change = True
+
             if not module.check_mode:
-              r = dns.create_record(future_record)
-              record_id = r.json()['record']['id']
-              this_record = r.json()
+                r = dns.create_record(future_record)
+                record_id = r.json()['record']['id']
+                this_record = r.json()
+
         elif record_changed:
             change = True
             this_record = { 'record': future_record }
@@ -137,18 +152,22 @@ def main():
         if record_exists:
             change = True
             if not module.check_mode:
-              r = dns.delete_record(record_id)
+                if not module.params.get("value"):
+                    # when value was not defined, delete all records of this type
+                    for id in record_ids:
+                        r = dns.delete_record(id)
+                else:
+                    r = dns.delete_record(record_id)
+
         else:
             change = False
         this_record = { 'record': None }
         record_id = None
 
-    if past_record is None:
-        past_record = {}
-    else:
-        past_record.pop('id')
-        past_record.pop('created')
-        past_record.pop('modified')
+    for idx in range(len(past_record)):
+        past_record[idx].pop('id')
+        past_record[idx].pop('created')
+        past_record[idx].pop('modified')
 
     diff = dict(
         before=yaml.safe_dump(past_record),
