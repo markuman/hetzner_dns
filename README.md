@@ -18,7 +18,9 @@ All modules supports and respects `check_mode: yes`.
 ## record
 
 * `state: absent` 
-    * _deleting_ a record: `name` and `type` are sufficient (_`value` and `ttl` doesn't matter_).  
+    * _deleting_ a record: `name` and `type` are sufficient (_`ttl` doesn't matter_).
+    * When `value` is not given, all records that match `name` and `type` will be removed!
+    * When `value` is given, only one record will be deleted that matches `name`, `type`, and `value`.
 * `state: present`
     * the `ttl` default value is set to `0` (_same as hetzner webinterface did._)
     * Either `zone_id` or `zone_name`  must be given, but not both.  
