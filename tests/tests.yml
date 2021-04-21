@@ -61,6 +61,17 @@
               - name: hetzner_dns_ansible_collection
                 type: CNAME
             zone_name: "{{ TEST_ZONE }}"
+          register: RECORD
+
+        - debug: msg="{{ RECORD }}"
+
+        - name: assert add record
+          assert:
+            that:
+              - RECORD.record_info[0].ttl == 300
+              - RECORD.record_info[0].type == 'CNAME'
+              - RECORD.record_info[0].value == 'osuv.de.'
+              - RECORD.record_info | count == 1
 
         - name: >
             fetch record info must
@@ -187,7 +198,7 @@
             zone_name: "{{ TEST_ZONE }}"
           register: RECORD
 
-        - name: assert 3 A recordds
+        - name: assert 3 A records
           assert:
             that:
               - RECORD.record_info | count == 3
@@ -201,7 +212,7 @@
             zone_name: "{{ TEST_ZONE }}"
           register: RECORD
 
-        - name: assert 1 A recordds
+        - name: assert 1 A record
           assert:
             that:
               - RECORD.record_info | count == 1
@@ -222,7 +233,7 @@
             zone_name: "{{ TEST_ZONE }}"
           register: RECORD
 
-        - name: assert 2 A recordds
+        - name: assert 2 A records
           assert:
             that:
               - RECORD.record_info | count == 2
@@ -254,7 +265,7 @@
             type: A
             value: 127.0.0.1
 
-        - name: replace
+        - name: replace record
           markuman.hetzner_dns.record:
             zone_name: osuv.de
             name: website1
@@ -269,10 +280,15 @@
             zone_name: osuv.de
           register: RECORD
 
-        - name: assert 2 A recordds
+        - debug: msg="{{ RECORD }}"
+
+        - name: assert 1 A record
           assert:
             that:
               - RECORD.record_info | count == 1
+              - RECORD.record_info[0].ttl == 300
+              - RECORD.record_info[0].type == 'A'
+              - RECORD.record_info[0].value == '127.0.0.2'
 
       always:
         - name: always del CNAME record
