@@ -53,6 +53,7 @@
             that:
               - RECORD is changed
               - RECORD.record_info.record.ttl == 300
+              - RECORD.record_info | count == 1
 
         - name: fetch record info
           markuman.hetzner_dns.record_info:
@@ -86,6 +87,7 @@
               - RECORD is not changed
               - RECORD.past_record[0].ttl == 300
               - RECORD.record_info.record.ttl == 300
+              - RECORD.record_info | count == 1
 
         - name: modify record change in check_mode
           markuman.hetzner_dns.record:
@@ -103,6 +105,7 @@
               - RECORD is changed
               - RECORD.record_info.record.ttl == 60
               - RECORD.past_record[0].ttl == 300
+              - RECORD.record_info | count == 1
 
         - name: modify record change
           markuman.hetzner_dns.record:
@@ -119,6 +122,7 @@
               - RECORD is changed
               - RECORD.record_info.record.ttl == 60
               - RECORD.past_record[0].ttl == 300
+              - RECORD.record_info | count == 1
 
         - name: del record
           markuman.hetzner_dns.record:
@@ -243,6 +247,33 @@
             that:
               - RECORD.record_info | count == 0
 
+        - name: add record
+          markuman.hetzner_dns.record:
+            zone_name: osuv.de
+            name: website1
+            type: A
+            value: 127.0.0.1
+
+        - name: replace
+          markuman.hetzner_dns.record:
+            zone_name: osuv.de
+            name: website1
+            type: A
+            value: 127.0.0.2
+
+        - name: fetch record info
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: website1
+                type: A
+            zone_name: osuv.de
+          register: RECORD
+
+        - name: assert 2 A recordds
+          assert:
+            that:
+              - RECORD.record_info | count == 1
+
       always:
         - name: always del CNAME record
           markuman.hetzner_dns.record:
@@ -255,5 +286,12 @@
           markuman.hetzner_dns.record:
             zone_name: "{{ TEST_ZONE }}"
             name: hetzner_dns_ansible_collection
+            type: A
+            state: absent
+
+        - name: always del A record
+          markuman.hetzner_dns.record:
+            zone_name: "{{ TEST_ZONE }}"
+            name: website1
             type: A
             state: absent

@@ -99,7 +99,7 @@ def main():
         'type': future_record.get('type')
     }
 
-    if module.params.get("value"):
+    if module.params.get("value") and not purge:
         find_record['value'] = module.params.get("value")
 
     records = dns.get_record_info(zone_id)
