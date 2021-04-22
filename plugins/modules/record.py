@@ -165,17 +165,25 @@ def main():
 
         else:
             change = False
-        this_record = { 'record': None }
+        this_record = { 'record': {} }
         record_id = None
 
     for idx in range(len(past_record)):
-        past_record[idx].pop('id')
-        past_record[idx].pop('created')
-        past_record[idx].pop('modified')
+        past_record[idx].pop('id', None)
+        past_record[idx].pop('created', None)
+        past_record[idx].pop('modified', None)
+        past_record[idx].pop('zone_id', None)
+
+    after_record = [this_record.get('record')]
+    if isinstance(after_record[0], dict):
+        after_record[0].pop('id', None)
+        after_record[0].pop('created', None)
+        after_record[0].pop('modified', None)
+        after_record[0].pop('zone_id', None)
 
     diff = dict(
         before=yaml.safe_dump(past_record),
-        after=yaml.safe_dump(this_record.get('record'))
+        after=yaml.safe_dump(after_record)
     )
 
     module.exit_json(changed = change, record_id=record_id, record_info=this_record, past_record=past_record, diff=diff)
