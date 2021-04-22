@@ -91,7 +91,7 @@
             type: CNAME
             ttl: 300
           register: RECORD
-        
+
         - name: assert add record no change
           assert:
             that:
@@ -253,7 +253,7 @@
             zone_name: "{{ TEST_ZONE }}"
           register: RECORD
 
-        - name: assert 2 A recordds
+        - name: assert 0 A records
           assert:
             that:
               - RECORD.record_info | count == 0
@@ -289,6 +289,69 @@
               - RECORD.record_info[0].ttl == 300
               - RECORD.record_info[0].type == 'A'
               - RECORD.record_info[0].value == '127.0.0.2'
+
+        - name: append record website1
+          markuman.hetzner_dns.record:
+            zone_name: osuv.de
+            name: website1
+            type: A
+            purge: no
+            value: 127.0.0.1
+
+        - name: fetch record info
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: website1
+                type: A
+            zone_name: osuv.de
+          register: RECORD
+
+        - name: assert 2 A record
+          assert:
+            that:
+              - RECORD.record_info | count == 2
+
+        - name: replace all
+          markuman.hetzner_dns.record:
+            zone_name: osuv.de
+            name: website1
+            type: A
+            purge: yes
+            value: 8.8.8.8
+
+        - name: fetch record info
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: website1
+                type: A
+            zone_name: osuv.de
+          register: RECORD
+
+        - name: assert 1 A record
+          assert:
+            that:
+              - RECORD.record_info | count == 1
+
+        - name: remove all records website1
+          markuman.hetzner_dns.record:
+            zone_name: osuv.de
+            name: website1
+            type: A
+            purge: yes
+            state: absent
+
+        - name: fetch record info
+          markuman.hetzner_dns.record_info:
+            filter:
+              - name: website1
+                type: A
+            zone_name: osuv.de
+          register: RECORD
+
+        - name: assert 0 A records
+          assert:
+            that:
+              - RECORD.record_info | count == 0
 
       always:
         - name: always del CNAME record

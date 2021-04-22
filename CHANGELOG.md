@@ -1,3 +1,12 @@
+# 1.4.3
+
+* fix bug. `purge: yes` removes not all existing records
+
+# 1.4.2
+
+* fix bug. even with `purge: yes`, it was always handled as `purge: no` and was always appending values.  
+  *  https://git.osuv.de/m/hetzner_dns/commit/c57e5fd8b9a2a9ad8a9a3769a1f98e9664e0e685
+
 # 1.4.1
 
 * minor change (_documentation update_).

@@ -125,12 +125,17 @@ def main():
             else:
                 this_record = { 'record': record }
 
+
     if record_changed and not purge:
         record_exists = False
         record_changed = False
     
     if state == 'present':
-        if not record_exists:
+        if purge and len(record_ids) > 1:
+            for id in record_ids:
+                r = dns.delete_record(id)
+
+        if not record_exists or (purge and len(record_ids) > 1):
             record_id = None
             this_record = { 'record': future_record }
             change = True
@@ -146,7 +151,6 @@ def main():
             if not module.check_mode:
               r = dns.update_record(future_record, record_id)
               this_record = r.json()
-            
 
     if state == 'absent':
         if record_exists:
