@@ -1,3 +1,8 @@
+# 1.5.0
+
+* fetch only requested `zone_name`
+* improve integrationtests (_easier to run against custom domains_)
+
 # 1.4.3
 
 * fix bug. `purge: yes` removes not all existing records

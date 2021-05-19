@@ -1,7 +1,7 @@
 namespace: "markuman"
 description: hetzner dns collection
 name: "hetzner_dns"
-version: "1.4.3"
+version: "1.5.0"
 readme: "README.md"
 authors:
     - "Markus Bergholz <markuman+spambelongstogoogle@gmail.com>"
