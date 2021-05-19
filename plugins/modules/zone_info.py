@@ -34,11 +34,11 @@ def main():
 
     name = module.params.get("name")
 
-    zones = dns.get_zone_info()
+    zones = dns.get_zone_info(name)
     zone_id, zone_info = ZoneInfo(zones, name)
-    
+
     module.exit_json(changed = False, zone_id=zone_id, zone_info=zone_info)
-    
+
 
 if __name__ == '__main__':
     main()

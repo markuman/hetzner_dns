@@ -37,12 +37,15 @@ class HetznerAPIHandler:
         if self.TOKEN is None:
             self.fail_json(msg='Unable to continue. No Hetzner DNS API Token is given.')
 
-    def get_zone_info(self):
+    def get_zone_info(self, zone_name):
         try:
             r = requests.get(
                 url="https://dns.hetzner.com/api/v1/zones",
                 headers={
                     "Auth-API-Token": self.TOKEN,
+                },
+                params={
+                    "name": zone_name,
                 },
             )
 

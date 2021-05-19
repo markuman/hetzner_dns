@@ -63,7 +63,7 @@ def main():
         state = dict(type='str', default='present', choices=['present', 'absent']),
         purge = dict(required=False, type='bool', default=True, aliases=['replace', 'overwrite', 'solo'])
     )
-    
+
     module = AnsibleModule(
         argument_spec=argument_spec,
         required_if=[['state', 'present', ['value']]],
@@ -81,7 +81,7 @@ def main():
     purge = module.params.get("purge")
 
     if zone_id is None:
-        zones = dns.get_zone_info()
+        zones = dns.get_zone_info(zone_name)
         zone_id, zone_info = ZoneInfo(zones, zone_name)
         if zone_id is None:
           module.fail_json(msg='zone or zone_id: {msg}'.format(msg=error_codes.get(404, UE)))
@@ -129,7 +129,7 @@ def main():
     if record_changed and not purge:
         record_exists = False
         record_changed = False
-    
+
     if state == 'present':
         if purge and len(record_ids) > 1:
             for id in record_ids:
@@ -179,7 +179,7 @@ def main():
     )
 
     module.exit_json(changed = change, record_id=record_id, record_info=this_record, past_record=past_record, diff=diff)
-    
+
 
 if __name__ == '__main__':
     main()

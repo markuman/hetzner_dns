@@ -18,7 +18,7 @@ EXAMPLES = '''
           - name: fritzbox
             type: AAAA
         zone_name: osuv.de
-    
+
 '''
 
 from ansible.module_utils.basic import *
@@ -33,7 +33,7 @@ def main():
         zone_name = dict(required=False, type='str'),
         api_token = dict(required=False, type='str', no_log=True, aliases=['access_token'])
     )
-    
+
     module = AnsibleModule(
         argument_spec=argument_spec,
         mutually_exclusive=[['zone_id', 'zone_name']],
@@ -48,7 +48,7 @@ def main():
     zone_name = module.params.get("zone_name")
 
     if zone_id is None:
-        zones = dns.get_zone_info()
+        zones = dns.get_zone_info(zone_name)
         zone_id = ZoneInfo(zones, zone_name)
 
     records = dns.get_record_info(zone_id)
@@ -62,10 +62,10 @@ def main():
                 if all(item in record.items() for item in filter.items()):
                     retval.append(record)
 
-    
+
 
     module.exit_json(changed = False, record_info=retval)
-    
+
 
 if __name__ == '__main__':
     main()
