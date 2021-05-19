@@ -4,7 +4,7 @@
   gather_facts: no
 
   vars:
-    TEST_ZONE: osuv.de
+    TEST_ZONE: ansible-training.de
 
   tasks:
     - name: test create
@@ -13,7 +13,7 @@
           markuman.hetzner_dns.record:
             zone_name: none_existing
             name: hetzner_dns_ansible_collection
-            value: osuv.de.
+            value: "osuv.de."
             type: CNAME
             ttl: 300
           register: RECORD
@@ -24,7 +24,7 @@
             that:
               - RECORD is not changed
               - RECORD is failed
-              - 'RECORD.msg == "zone or zone_id: Not found."'
+              - 'RECORD.msg == "zone_info: Not found."'
 
         - name: fetch zone info
           markuman.hetzner_dns.zone_info:
@@ -43,12 +43,12 @@
           markuman.hetzner_dns.record:
             zone_id: "{{ ZONES.zone_id }}"
             name: hetzner_dns_ansible_collection
-            value: osuv.de.
+            value: "{{ TEST_ZONE }}."
             type: CNAME
             ttl: 300
           register: RECORD
 
-        - name: assert add record
+        - name: assert add record 1
           assert:
             that:
               - RECORD is changed
@@ -63,14 +63,15 @@
             zone_name: "{{ TEST_ZONE }}"
           register: RECORD
 
-        - debug: msg="{{ RECORD }}"
+        - debug:
+            msg: "{{ RECORD }}"
 
-        - name: assert add record
+        - name: assert add record 2
           assert:
             that:
               - RECORD.record_info[0].ttl == 300
               - RECORD.record_info[0].type == 'CNAME'
-              - RECORD.record_info[0].value == 'osuv.de.'
+              - RECORD.record_info[0].value == "{{ TEST_ZONE }}."
               - RECORD.record_info | count == 1
 
         - name: >
@@ -87,7 +88,7 @@
           markuman.hetzner_dns.record:
             zone_name: "{{ TEST_ZONE }}"
             name: hetzner_dns_ansible_collection
-            value: osuv.de.
+            value: "{{ TEST_ZONE }}."
             type: CNAME
             ttl: 300
           register: RECORD
@@ -104,7 +105,7 @@
           markuman.hetzner_dns.record:
             zone_name: "{{ TEST_ZONE }}"
             name: hetzner_dns_ansible_collection
-            value: osuv.de.
+            value: "{{ TEST_ZONE }}."
             type: CNAME
             ttl: 60
           check_mode: yes
@@ -122,7 +123,7 @@
           markuman.hetzner_dns.record:
             zone_name: "{{ TEST_ZONE }}"
             name: hetzner_dns_ansible_collection
-            value: osuv.de.
+            value: "{{ TEST_ZONE }}."
             type: CNAME
             ttl: 60
           register: RECORD
@@ -260,14 +261,14 @@
 
         - name: add record
           markuman.hetzner_dns.record:
-            zone_name: osuv.de
+            zone_name: "{{ TEST_ZONE }}"
             name: website1
             type: A
             value: 127.0.0.1
 
         - name: replace record
           markuman.hetzner_dns.record:
-            zone_name: osuv.de
+            zone_name: "{{ TEST_ZONE }}"
             name: website1
             type: A
             value: 127.0.0.2
@@ -277,10 +278,11 @@
             filter:
               - name: website1
                 type: A
-            zone_name: osuv.de
+            zone_name: "{{ TEST_ZONE }}"
           register: RECORD
 
-        - debug: msg="{{ RECORD }}"
+        - debug:
+            msg: "{{ RECORD }}"
 
         - name: assert 1 A record
           assert:
@@ -292,7 +294,7 @@
 
         - name: append record website1
           markuman.hetzner_dns.record:
-            zone_name: osuv.de
+            zone_name: "{{ TEST_ZONE }}"
             name: website1
             type: A
             purge: no
@@ -303,7 +305,7 @@
             filter:
               - name: website1
                 type: A
-            zone_name: osuv.de
+            zone_name: "{{ TEST_ZONE }}"
           register: RECORD
 
         - name: assert 2 A record
@@ -313,7 +315,7 @@
 
         - name: replace all
           markuman.hetzner_dns.record:
-            zone_name: osuv.de
+            zone_name: "{{ TEST_ZONE }}"
             name: website1
             type: A
             purge: yes
@@ -324,7 +326,7 @@
             filter:
               - name: website1
                 type: A
-            zone_name: osuv.de
+            zone_name: "{{ TEST_ZONE }}"
           register: RECORD
 
         - name: assert 1 A record
@@ -334,7 +336,7 @@
 
         - name: remove all records website1
           markuman.hetzner_dns.record:
-            zone_name: osuv.de
+            zone_name: "{{ TEST_ZONE }}"
             name: website1
             type: A
             purge: yes
@@ -345,7 +347,7 @@
             filter:
               - name: website1
                 type: A
-            zone_name: osuv.de
+            zone_name: "{{ TEST_ZONE }}"
           register: RECORD
 
         - name: assert 0 A records
