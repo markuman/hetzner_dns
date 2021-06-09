@@ -20,8 +20,12 @@ syntax: ## test compile
 	python -m py_compile plugins/modules/zone_info.py
 	python -m py_compile plugins/module_utils/helper.py
 
+whisper: ## verify files
+	whisper-ci --exit-code 1
+
 round: ## remove, build install
 	$(MAKE) syntax
+	$(MAKE) whisper
 	$(MAKE) remove
 	$(MAKE) build
 	$(MAKE) install
