@@ -31,7 +31,7 @@ def ZoneInfo(zones, name):
     return zone_id, zone_info
 
 class HetznerAPIHandler:
-    def __init__(self, params, fail_json):
+    def __init__(self, params, fail_json=None):
         self.fail_json = fail_json
         self.TOKEN = params.get('api_token') or os.environ.get('HETZNER_DNS_TOKEN')
         if self.TOKEN is None:

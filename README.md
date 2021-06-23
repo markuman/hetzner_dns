@@ -170,6 +170,21 @@ To determine the `zone_id`.
     name: zone_name
 ```
 
+# Dynamic Inventory
+
+`hetzner_dns` collection comes with a dns based dynamic inventory.   
+The file ending must be `.hetzner_dns.yml` or `.hetzner_dns.yaml`.
+
+```yml
+plugin: markuman.hetzner_dns.hetzner_dns
+zone_name: osuv.de
+```
+
+Can be used with 
+
+`ansible-inventory -i osuv.hetzner_dns.yml --list` or  
+`ansible-playbook -i osuv.hetzner_dns.yml some_tasks.yml`
+
 ### SCM
 
 | **host** | **category** |
