@@ -54,8 +54,6 @@ class InventoryModule(BaseInventoryPlugin):
         #parse data and create inventory objects:
         for item in records:
             if item.get('type') in ['A', 'AAAA', 'CNAME']:
-                q(item.get('type'))
-                q(item.get('name'))
                 name = item.get('name') + '.' + zone_name
                 self.inventory.add_host(name)
                 self.inventory.set_variable(name, 'ansible_host', item.get('value'))
