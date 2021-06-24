@@ -1,6 +1,7 @@
 # hetzner dns ansible collection
 
-Manage DNS records using ansible. E.g. [set DNS records while creating servers in the same play](https://git.osuv.de/m/hetzner_dns/wiki/Home).
+Manage DNS records using ansible. E.g. [set DNS records while creating servers in the same play](https://git.osuv.de/m/hetzner_dns/wiki/Home).  
+Or use hetzner DNS as an inventory for your playbooks.
 
 * https://galaxy.ansible.com/markuman/hetzner_dns
 * `ansible-galaxy collection install markuman.hetzner_dns`
