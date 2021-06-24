@@ -185,6 +185,19 @@ Can be used with
 `ansible-inventory -i osuv.hetzner_dns.yml --list` or  
 `ansible-playbook -i osuv.hetzner_dns.yml some_tasks.yml`
 
+Supported filters are
+
+```yml
+plugin: markuman.hetzner_dns.hetzner_dns
+zone_name: osuv.de
+filters:
+  type:
+    - A
+    - CNAME
+```
+
+The default type filter is set to `['A', 'AAAA', 'CNAME']`
+
 ### SCM
 
 | **host** | **category** |

@@ -23,6 +23,12 @@ DOCUMENTATION = '''
             description: api token. if not set, it is read from env HETZNER_DNS_TOKEN
             required: False
             type: string
+        filters:
+            description:
+                - A dictionary of filter value pairs.
+            type: dict
+            default: {}
+            required: False
 '''
 
 class InventoryModule(BaseInventoryPlugin):
@@ -34,7 +40,12 @@ class InventoryModule(BaseInventoryPlugin):
         self.api_token = self.get_option('api_token') or os.environ.get('HETZNER_DNS_TOKEN')
 
     def verify_file(self, path):
-        return True
+        valid = False
+        if super(InventoryModule, self).verify_file(path):
+            # base class verifies that file exists and is readable by current user
+            if path.endswith(('hetzner_dns.yaml', 'hetzner_dns.yml')):
+                valid = True
+        return valid
 
     def parse(self, inventory, loader, path, cache=False):
 
@@ -51,9 +62,12 @@ class InventoryModule(BaseInventoryPlugin):
 
         records = dns.get_record_info(zone_id).json()['records']
 
+        filters = self.get_option('filters')
+        filter_types = filters.get('type') or ['A', 'AAAA', 'CNAME']
+
         #parse data and create inventory objects:
         for item in records:
-            if item.get('type') in ['A', 'AAAA', 'CNAME']:
+            if item.get('type') in filter_types:
                 name = item.get('name') + '.' + zone_name
                 self.inventory.add_host(name)
                 self.inventory.set_variable(name, 'ansible_host', item.get('value'))

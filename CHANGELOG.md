@@ -1,3 +1,18 @@
+# 1.6.0
+
+* Add dynamic inventory for hetzner dns
+
+```yml
+plugin: markuman.hetzner_dns.hetzner_dns
+zone_name: osuv.de
+filters:
+  type:
+    - A
+    - CNAME
+```
+
+`ansible-inventory -i osuv.hetzner_dns.yml --list`
+
 # 1.5.0
 
 * fetch only requested `zone_name`
