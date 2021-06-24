@@ -19,13 +19,19 @@ syntax: ## test compile
 	python -m py_compile plugins/modules/record_info.py
 	python -m py_compile plugins/modules/zone_info.py
 	python -m py_compile plugins/module_utils/helper.py
+	python -m py_compile plugins/inventory/inventory.py
 
 whisper: ## verify files
 	whisper-ci --exit-code 1
 
+cleanup: ## remove garbage
+	rm -rf whispers.log
+	find . -type d -name __pycache__ -exec rm -r {} \+
+
 round: ## remove, build install
 	$(MAKE) syntax
 	$(MAKE) whisper
+	$(MAKE) cleanup
 	$(MAKE) remove
 	$(MAKE) build
 	$(MAKE) install
