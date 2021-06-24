@@ -32,7 +32,7 @@ DOCUMENTATION = '''
 '''
 
 class InventoryModule(BaseInventoryPlugin):
-    NAME = 'markuman.hetzner_dns.hetzner_dns'
+    NAME = 'markuman.hetzner_dns.inventory'
 
     def __init__(self):
         super(InventoryModule, self).__init__()

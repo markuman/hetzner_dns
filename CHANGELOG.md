@@ -3,7 +3,7 @@
 * Add dynamic inventory for hetzner dns
 
 ```yml
-plugin: markuman.hetzner_dns.hetzner_dns
+plugin: markuman.hetzner_dns.inventory
 zone_name: osuv.de
 filters:
   type:
