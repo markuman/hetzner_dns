@@ -177,7 +177,7 @@ To determine the `zone_id`.
 The file ending must be `.hetzner_dns.yml` or `.hetzner_dns.yaml`.
 
 ```yml
-plugin: markuman.hetzner_dns.hetzner_dns
+plugin: markuman.hetzner_dns.inventory
 zone_name: osuv.de
 ```
 
