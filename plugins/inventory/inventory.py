@@ -4,6 +4,8 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 # Part of ansible markuman.hetzner_dns collection
 
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
 
 from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import HetznerAPIHandler
 from ansible_collections.markuman.hetzner_dns.plugins.module_utils.helper import ZoneInfo
@@ -13,7 +15,7 @@ import os
 DOCUMENTATION = '''
     name: hetzner_dns
     plugin_type: inventory
-
+    description: Use hetzner dns zone as ansible inventory.
     options:
         zone_name:
             description: dns zone name.
