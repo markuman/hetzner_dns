@@ -1,0 +1,7 @@
+---
+requires_ansible: '>=2.9.6'
+action_groups:
+  hetzner_dns:
+  - record
+  - record_info
+  - zone_info
