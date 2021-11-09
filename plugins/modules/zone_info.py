@@ -30,6 +30,8 @@ def main():
         supports_check_mode=True
     )
 
+    module.deprecate("'markuman.hetzner_dns' collection becomes deprecated since 'community.dns' included support for hetzner dns")
+
     dns = HetznerAPIHandler(module.params, module.fail_json)
 
     name = module.params.get("name")

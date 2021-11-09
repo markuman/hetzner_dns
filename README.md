@@ -1,4 +1,51 @@
+
+⚠ functionality of markuman.hetzner_dns collection has moved to community.dns with version 2.0.0 ⚠ 
+
+* [Official Migration Guide](https://github.com/ansible-collections/community.dns/blob/main/docs/docsite/rst/hetzner_guide.rst#migrating-from-markuman-hetzner-dns)
+
+In most cases, `community.dns` works as a drop-in replacement. There are tiny things to need to take care of.  
+
+In the past, you've used
+```yml
+    - name: set dns record with markuman.hetzner_dns
+      markuman.hetzner_dns.record:
+        name: localhost
+        type: A
+        value: 127.0.0.1
+        ttl: 60
+        zone_name: osuv.de
+```
+
+With community.dns it is
+
+```yml
+    - name: set same record with community.dns
+      community.dns.hetzner_dns_record:
+        name: localhost
+        type: A
+        value: 127.0.0.1
+        ttl: 60
+        zone_name: osuv.de
+        state: present
+```
+
+here is a diff
+
+```diff
+```yml
+    - name: set dns record with markuman.hetzner_dns
+-      markuman.hetzner_dns.record:
++      community.dns.hetzner_dns_record:
+        name: localhost
+        type: A
+        value: 127.0.0.1
+        ttl: 60
+        zone_name: osuv.de
++        state: present
+```
+
 # hetzner dns ansible collection
+
 
 Manage DNS records using ansible. E.g. [set DNS records while creating servers in the same play](https://git.osuv.de/m/hetzner_dns/wiki/Home).  
 Or use hetzner DNS as an inventory for your playbooks.
